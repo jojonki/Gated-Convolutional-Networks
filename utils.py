@@ -1,16 +1,20 @@
+import os
 import torch
 from torch.autograd import Variable
 
 
-def read_words(fpath, seq_len, filter_h):
+def read_words(data_dir, seq_len, filter_h):
     words = []
-    with open(fpath, 'r') as f:
-        lines = f.readlines()
-        for line in lines:
-            tokens = line.split()
-            # TODO only choose specified length sentence
-            if len(tokens) == seq_len - 2:
-                words.extend((['<pad>']*int(filter_h/2)) + ['<s>'] + tokens + ['</s>'])
+    for file in os.listdir(data_dir):
+        print('Load', file)
+        with open(os.path.join(data_dir, file), 'r') as f:
+            lines = f.readlines()
+            for line in lines:
+                tokens = line.split()
+                # TODO currently only choose specified length sentence
+                if len(tokens) == seq_len - 2:
+                    # TODO i'm not sure about the padding...
+                    words.extend((['<pad>']*int(filter_h/2)) + ['<s>'] + tokens + ['</s>'])
 
     return words
 
