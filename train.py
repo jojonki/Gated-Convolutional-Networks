@@ -53,6 +53,7 @@ def train(model, data, test_data, optimizer, loss_fn, n_epoch=10):
         print('current performance at ecpoh', epoch)
         test(model, test_data)
 
+
 def test(model, data):
     model.eval()
     counter = 0
