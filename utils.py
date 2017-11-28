@@ -6,7 +6,7 @@ def read_words(fpath, seq_len, filter_h):
     words = []
     with open(fpath, 'r') as f:
         lines = f.readlines()
-        for line in lines[:5000]:
+        for line in lines:
             tokens = line.split()
             # TODO only choose specified length sentence
             if len(tokens) == seq_len - 2:
