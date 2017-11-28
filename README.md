@@ -8,3 +8,4 @@ https://arxiv.org/abs/1612.08083
 - [ ] adaptive softmax
 - [ ] train w/ full size data
 - [ ] impl checkpoints
+- [ ] read all dataset (currently just read one file)

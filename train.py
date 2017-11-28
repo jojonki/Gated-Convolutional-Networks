@@ -9,6 +9,7 @@ from gated_cnn import GatedCNN
 
 seq_len    = 21
 embd_size  = 200
+n_layers   = 5
 kernel     = (5, embd_size)
 out_chs    = 64
 batch_size = 128
@@ -70,7 +71,7 @@ def test(model, data):
     print('Test Acc: {:.2f} % ({}/{})'.format(100 * correct / counter, correct, counter))
     print('Test Loss: {:.4f}'.format(losses/counter))
 
-model = GatedCNN(seq_len, vocab_size, embd_size, kernel, out_chs, vocab_size)
+model = GatedCNN(seq_len, vocab_size, embd_size, n_layers, kernel, out_chs, vocab_size)
 if torch.cuda.is_available():
     model.cuda()
 optimizer = torch.optim.Adadelta(model.parameters())
