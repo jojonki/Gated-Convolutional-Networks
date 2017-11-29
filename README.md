@@ -22,7 +22,6 @@ This is a PyTorch implementation of Facebook AI Research Lab's paper: Language M
 
 ## TODO
 
-- [ ] adaptive softmax
-- [ ] train w/ full size data
+- [ ] impl adaptive softmax
+- [ ] bug? accuracy didn't increase from epoch#1
 - [ ] impl checkpoints
-- [ ] read all dataset (currently just read one file)
