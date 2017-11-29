@@ -24,13 +24,15 @@ class GatedCNN(nn.Module):
         self.embedding = nn.Embedding(vocab_size, embd_size)
 
         # nn.Conv2d(in_channels, out_channels, kernel_size, stride=1, padding=0, ...
-        self.conv_0      = nn.Conv2d(1, out_chs, kernel, padding=(2, 0)) # )2, 99
-        self.conv_gate_0 = nn.Conv2d(1, out_chs, kernel, padding=(2, 0)) # )2, 99
-
-        # todo bias
+        self.conv_0 = nn.Conv2d(1, out_chs, kernel, padding=(2, 0))
+        self.b_0 = nn.Parameter(torch.randn(1, out_chs, 1, 1))
+        self.conv_gate_0 = nn.Conv2d(1, out_chs, kernel, padding=(2, 0))
+        self.c_0 = nn.Parameter(torch.randn(1, out_chs, 1, 1))
 
         self.conv = nn.ModuleList([nn.Conv2d(out_chs, out_chs, (kernel[0], 1), padding=(2, 0)) for _ in range(n_layers)])
         self.conv_gate = nn.ModuleList([nn.Conv2d(out_chs, out_chs, (kernel[0], 1), padding=(2, 0)) for _ in range(n_layers)])
+        self.b = nn.ParameterList([nn.Parameter(torch.randn(1, out_chs, 1, 1)) for _ in range(n_layers)])
+        self.c = nn.ParameterList([nn.Parameter(torch.randn(1, out_chs, 1, 1)) for _ in range(n_layers)])
 
         self.fc = nn.Linear(out_chs*seq_len, ans_size)
 
@@ -39,22 +41,25 @@ class GatedCNN(nn.Module):
 
         # Embedding
         bs = x.size(0) # batch size
-        x = self.embedding(x) # (bs, word_len, embd_size)
+        seq_len = x.size(1)
+        x = self.embedding(x) # (bs, seq_len, embd_size)
 
         # CNN
         x = x.unsqueeze(1) # (bs, Cin, seq_len, embd_size), insert Channnel-In dim
         # Conv2d
         #    Input : (bs, Cin,  Hin,  Win )
         #    Output: (bs, Cout, Hout, Wout)
-        A = self.conv_0(x) # (bs, Cout, seq_len, 1?)
-        B = self.conv_gate_0(x) # (bs, Cout, seq_len, 1?)
-        h = A * F.sigmoid(B) # (bs, Cout, seq_len, 1?)
+        A = self.conv_0(x)      # (bs, Cout, seq_len, 1)
+        A += self.b_0.repeat(1, 1, seq_len, 1)
+        B = self.conv_gate_0(x) # (bs, Cout, seq_len, 1)
+        B += self.c_0.repeat(1, 1, seq_len, 1)
+        h = A * F.sigmoid(B)    # (bs, Cout, seq_len, 1)
         res_input = h # TODO this is h1 not h0
 
         for i, (conv, conv_gate) in enumerate(zip(self.conv, self.conv_gate)):
-            A = conv(h)
-            B = conv_gate(h)
-            h = A * F.sigmoid(B) # (bs, Cout, seq_len, 1?)
+            A = conv(h) + self.b[i].repeat(1, 1, seq_len, 1)
+            B = conv_gate(h) + self.c[i].repeat(1, 1, seq_len, 1)
+            h = A * F.sigmoid(B) # (bs, Cout, seq_len, 1)
             if i % self.res_block_count == 0: # size of each residual block
                 h += res_input
                 res_input = h
