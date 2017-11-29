@@ -24,4 +24,6 @@ This is a PyTorch implementation of Facebook AI Research Lab's paper: Language M
 
 - [ ] impl adaptive softmax
 - [ ] bug? accuracy didn't increase from epoch#1
+- [ ] support variable sentence length using padding
+- [ ] Understand padding at the beginning of sentence
 - [ ] impl checkpoints
