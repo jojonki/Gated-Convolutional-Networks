@@ -1,4 +1,4 @@
-# Gated-Convolutional-Networks
+# Gated-Convolutional-Networks (unofficial)
 Language Modeling with Gated Convolutional Networks
 Yann N. Dauphin, Angela Fan, Michael Auli, David Grangier
 https://arxiv.org/abs/1612.08083
